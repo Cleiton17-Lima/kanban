@@ -1,8 +1,9 @@
-
 package com.cleiton.kanban.controllers;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,27 +37,21 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task create(@RequestBody Task task) {
-        return taskService.save(task);
+    public ResponseEntity<Task> create(@RequestBody Task task) {
+        Task createdTask = taskService.create(task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
     @PutMapping("/{id}")
     public Task update(
             @PathVariable Long id,
             @RequestBody Task task) {
-
-        Task existingTask = taskService.findById(id);
-
-        existingTask.setTitle(task.getTitle());
-        existingTask.setDescription(task.getDescription());
-        existingTask.setStatus(task.getStatus());
-        existingTask.setPriority(task.getPriority());
-
-        return taskService.save(existingTask);
+        return taskService.update(id, task);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         taskService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
