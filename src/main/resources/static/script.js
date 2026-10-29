@@ -62,8 +62,24 @@ async function request(url, options = {}) {
     }
 
     if (!response.ok) {
-        const message = await response.text();
-        throw new Error(message || `Erro HTTP ${response.status}`);
+        const responseText = await response.text();
+        const error = new Error(`Erro HTTP ${response.status}`);
+        error.status = response.status;
+        // Nao exibir paginas HTML ou detalhes internos do servidor na notificacao.
+        const plainText = responseText.replace(/<[^>]*>/g, " ").replace(/\\s+/g, " ").trim();
+        if (response.status === 403) {
+            error.userMessage = "A protecao da sessao recusou a operacao. Atualize a pagina e tente novamente.";
+        } else if (response.status >= 500) {
+            error.userMessage = "O servidor nao conseguiu salvar a tarefa. Confira os logs da aplicacao e se a migracao do banco foi executada.";
+        } else if (response.status === 400 && plainText && plainText.length < 220) {
+            error.userMessage = plainText;
+        } else if (response.status === 429) {
+            error.userMessage = "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
+        } else {
+            error.userMessage = `Nao foi possivel concluir a operacao (HTTP ${response.status}).`;
+        }
+        console.error("Resposta de erro da API:", response.status, responseText);
+        throw error;
     }
 
     if (response.status === 204) return null;
@@ -411,7 +427,7 @@ taskForm.addEventListener("submit", async event => {
     } catch (error) {
         console.error("Erro ao salvar tarefa:", error);
 
-        showNotification("Não foi possível salvar a tarefa.");
+        showNotification(error.userMessage || "Não foi possível salvar a tarefa. Tente novamente.");
     }
 });
 
