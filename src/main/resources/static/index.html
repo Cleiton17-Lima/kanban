@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Meu Kanban</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-icon">K</span>
+            <div>
+                <h1>Meu Kanban</h1>
+                <p>Organize suas tarefas e acompanhe seu progresso</p>
+            </div>
+        </div>
+
+        <button id="open-task-modal" class="btn-primary">
+            + Nova tarefa
+        </button>
+    </header>
+
+    <main class="container">
+
+        <section class="welcome">
+            <div>
+                <h2>Meu quadro de tarefas</h2>
+                <p>Planeje, execute e conclua suas atividades.</p>
+            </div>
+
+            <span id="task-counter" class="task-counter">
+                0 tarefas
+            </span>
+        </section>
+
+        <section class="kanban-board">
+
+            <div class="kanban-column" data-status="TODO">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="status-dot todo-dot"></span>
+                        <h3>A Fazer</h3>
+                    </div>
+                    <span class="column-count" id="count-todo">0</span>
+                </div>
+
+                <div class="task-list" id="todo-list">
+                    <p class="empty-message">Nenhuma tarefa por aqui.</p>
+                </div>
+            </div>
+
+            <div class="kanban-column" data-status="IN_PROGRESS">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="status-dot progress-dot"></span>
+                        <h3>Em Andamento</h3>
+                    </div>
+                    <span class="column-count" id="count-progress">0</span>
+                </div>
+
+                <div class="task-list" id="progress-list">
+                    <p class="empty-message">Nenhuma tarefa por aqui.</p>
+                </div>
+            </div>
+
+            <div class="kanban-column" data-status="DONE">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="status-dot done-dot"></span>
+                        <h3>Concluído</h3>
+                    </div>
+                    <span class="column-count" id="count-done">0</span>
+                </div>
+
+                <div class="task-list" id="done-list">
+                    <p class="empty-message">Nenhuma tarefa por aqui.</p>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <dialog id="task-modal" class="task-modal">
+        <form id="task-form">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modal-title">Nova tarefa</h2>
+                    <p>Preencha os dados da atividade.</p>
+                </div>
+
+                <button type="button" id="close-task-modal"
+                        class="btn-close" aria-label="Fechar">
+                    &times;
+                </button>
+            </div>
+
+            <label for="title">Título</label>
+            <input type="text" id="title" name="title"
+                   maxlength="120" required
+                   placeholder="Ex.: Estudar Spring Boot">
+
+            <label for="description">Descrição</label>
+            <textarea id="description" name="description"
+                      rows="3" maxlength="1000"
+                      placeholder="Descreva a tarefa"></textarea>
+
+            <label for="priority">Prioridade</label>
+            <select id="priority" name="priority" required>
+                <option value="BAIXA">Baixa</option>
+                <option value="MEDIA" selected>Média</option>
+                <option value="ALTA">Alta</option>
+            </select>
+
+            <label for="status">Status inicial</label>
+            <select id="status" name="status" required>
+                <option value="TODO">A Fazer</option>
+                <option value="IN_PROGRESS">Em Andamento</option>
+                <option value="DONE">Concluído</option>
+            </select>
+
+            <div class="modal-actions">
+                <button type="button" id="cancel-task"
+                        class="btn-secondary">
+                    Cancelar
+                </button>
+
+                <button type="submit" id="save-task-button" class="btn-primary">
+                    Salvar tarefa
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    <div id="notification" class="notification"
+         role="status" aria-live="polite"></div>
+
+</body>
+</html>
