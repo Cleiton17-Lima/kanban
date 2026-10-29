@@ -3,6 +3,7 @@ package com.cleiton.kanban.security;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,10 +21,16 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
     private static final int MAX_REGISTRATION_ATTEMPTS = 5;
 
     private final ConcurrentHashMap<String, AttemptWindow> attempts = new ConcurrentHashMap<>();
+    private final AtomicLong requestCounter = new AtomicLong();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
+        if (requestCounter.incrementAndGet() % 256 == 0) {
+            long now = System.currentTimeMillis();
+            attempts.entrySet().removeIf(entry -> now - entry.getValue().startedAt >= WINDOW_MILLIS);
+        }
+
         String path = request.getRequestURI();
         boolean login = "POST".equalsIgnoreCase(request.getMethod()) && "/login".equals(path);
         boolean registration = "POST".equalsIgnoreCase(request.getMethod())
