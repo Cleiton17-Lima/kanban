@@ -324,3 +324,90 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
     .topbar-actions .btn-primary { padding: 10px 12px; }
     .btn-logout { min-height: 38px; padding: 8px 10px; }
 }
+
+
+/* Ajustes de layout da conta e notificacoes */
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+#logout-form {
+    display: flex;
+    align-items: center;
+}
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 15px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.btn-logout:hover {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: var(--primary);
+}
+.notification {
+    right: max(20px, env(safe-area-inset-right));
+    bottom: max(20px, env(safe-area-inset-bottom));
+    z-index: 2000;
+    width: max-content;
+    max-width: min(420px, calc(100vw - 40px));
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+    line-height: 1.5;
+    padding: 15px 18px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.28);
+}
+.notification.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+@media (max-width: 760px) {
+    .topbar {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    .topbar-actions {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+    .account-name {
+        max-width: 140px;
+    }
+}
+@media (max-width: 420px) {
+    .topbar-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+    }
+    .account-name {
+        grid-column: 1 / -1;
+        max-width: 100%;
+    }
+    .topbar-actions #open-task-modal {
+        justify-self: start;
+    }
+    .btn-logout {
+        min-height: 40px;
+        padding: 9px 12px;
+    }
+    .notification {
+        right: 12px;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        max-width: calc(100vw - 24px);
+    }
+}
