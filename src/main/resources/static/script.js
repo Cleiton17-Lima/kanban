@@ -93,8 +93,10 @@ function normalizePriority(priority) {
 }
 
 function createTaskCard(task) {
+    const priority = normalizePriority(task.priority);
+
     const card = document.createElement("article");
-    card.className = "task-card";
+    card.className = `task-card task-priority-${priority}`;
     card.draggable = true;
     card.dataset.id = task.id;
 
@@ -131,8 +133,6 @@ function createTaskCard(task) {
     const footer = document.createElement("div");
     footer.className = "task-footer";
 
-    const priority = normalizePriority(task.priority);
-
     const priorityLabels = {
         BAIXA: "Baixa",
         MEDIA: "Média",
@@ -143,11 +143,15 @@ function createTaskCard(task) {
     priorityBadge.className = `priority priority-${priority}`;
     priorityBadge.textContent = priorityLabels[priority];
 
+    const cardHeader = document.createElement("div");
+    cardHeader.className = "task-card-header";
+    cardHeader.append(title, priorityBadge);
+
     const taskId = document.createElement("span");
     taskId.className = "task-id";
     taskId.textContent = `#${task.id}`;
 
-    footer.append(priorityBadge, taskId);
+    footer.appendChild(taskId);
 
     const actions = document.createElement("div");
     actions.className = "task-actions";
@@ -168,7 +172,7 @@ function createTaskCard(task) {
 
     actions.append(editButton, deleteButton);
 
-    card.append(title, description);
+    card.append(cardHeader, description);
     if (dates.childElementCount > 0) card.appendChild(dates);
     card.append(footer, actions);
 
