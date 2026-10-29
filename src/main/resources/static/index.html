@@ -22,9 +22,16 @@
             </div>
         </div>
 
-        <button id="open-task-modal" class="btn-primary" aria-haspopup="dialog">
-            + Nova tarefa
-        </button>
+        <div class="topbar-actions">
+            <span id="account-name" class="account-name" aria-label="Usuário conectado">Conta</span>
+            <button id="open-task-modal" class="btn-primary" aria-haspopup="dialog">
+                + Nova tarefa
+            </button>
+            <form id="logout-form" method="post" action="/logout">
+                <input type="hidden" name="_csrf" id="logout-csrf">
+                <button type="submit" class="btn-logout">Sair</button>
+            </form>
+        </div>
     </header>
 
     <main class="container">
