@@ -89,6 +89,37 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
     white-space: nowrap;
 }
 
+
+/* Pesquisa e filtros */
+.task-filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) minmax(160px, 1fr) minmax(160px, 1fr) auto;
+    align-items: end;
+    gap: 14px;
+    margin: -8px 0 26px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: var(--shadow);
+}
+.search-field, .filter-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.task-filters label { color: var(--text); font-size: 12px; font-weight: 700; }
+.task-filters input, .task-filters select {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    border: 1px solid #dce3ed;
+    border-radius: 9px;
+    background: #fff;
+    color: var(--text);
+}
+.task-filters input:focus, .task-filters select:focus {
+    border-color: var(--primary);
+    outline: 3px solid rgba(79, 70, 229, 0.12);
+}
+.task-filters .btn-secondary { min-height: 42px; padding: 9px 13px; white-space: nowrap; }
+
 .kanban-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 20px; }
 .kanban-column {
     min-width: 0;
@@ -111,9 +142,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .empty-message { padding: 22px 10px; color: var(--muted); text-align: center; font-size: 13px; }
 
 .task-card {
+    --priority-accent: #d97706;
     position: relative;
-    padding: 17px;
+    padding: 16px;
     border: 1px solid #e5eaf2;
+    border-left: 4px solid var(--priority-accent);
     border-radius: 14px;
     background: var(--surface);
     box-shadow: 0 3px 8px rgba(15, 23, 42, 0.035);
@@ -121,10 +154,15 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
     overflow-wrap: anywhere;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
-.task-card:hover { transform: translateY(-3px); border-color: #cfd5ff; box-shadow: 0 10px 24px rgba(30, 41, 59, 0.08); }
+.task-priority-ALTA { --priority-accent: #dc2626; }
+.task-priority-MEDIA { --priority-accent: #d97706; }
+.task-priority-BAIXA { --priority-accent: #0284c7; }
+.task-card:hover { transform: translateY(-3px); border-color: #cfd5ff; border-left-color: var(--priority-accent); box-shadow: 0 10px 24px rgba(30, 41, 59, 0.08); }
 .task-card:active { cursor: grabbing; }
 .task-card.dragging { opacity: 0.45; }
-.task-card h4 { margin: 0 0 9px; color: #202b3c; font-size: 15px; font-weight: 700; line-height: 1.4; }
+.task-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+.task-card h4 { min-width: 0; margin: 0; color: #202b3c; font-size: 15px; font-weight: 700; line-height: 1.4; }
+.task-card-header .priority { flex-shrink: 0; }
 .task-description { margin: 0 0 12px; color: var(--muted); font-size: 13px; line-height: 1.7; white-space: pre-wrap; }
 .task-dates { display: flex; flex-direction: column; gap: 3px; margin: 0 0 12px; color: #64748b; font-size: 11px; }
 .task-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding-top: 12px; border-top: 1px solid #f0f2f7; }
@@ -190,12 +228,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 }
 .notification.show { opacity: 1; transform: translateY(0); }
 
+@media (max-width: 1050px) {
+    .task-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 900px) {
     .kanban-board { grid-template-columns: 1fr; gap: 16px; }
     .kanban-column { min-height: 180px; padding: 15px; }
     .task-list { min-height: 90px; }
 }
 @media (max-width: 520px) {
+    .task-filters { grid-template-columns: 1fr; gap: 12px; padding: 14px; margin-bottom: 20px; }
+    .task-filters .btn-secondary { width: 100%; }
+
     .topbar { align-items: flex-start; gap: 12px; padding: 18px 4%; }
     .brand { gap: 10px; }
     .brand-icon { width: 40px; height: 40px; }
@@ -217,5 +261,153 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+}
+
+/* Refinamentos de usabilidade e acessibilidade dos filtros */
+.task-filters {
+    grid-template-areas:
+        "search priority status clear"
+        "help help help help";
+}
+.search-field { grid-area: search; }
+.task-filters > .filter-field:nth-of-type(2) { grid-area: priority; }
+.task-filters > .filter-field:nth-of-type(3) { grid-area: status; }
+.task-filters > #clear-filters { grid-area: clear; }
+.filter-help {
+    grid-area: help;
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+.task-filters .btn-secondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+}
+.task-filters input:hover, .task-filters select:hover { border-color: #b8c2d5; }
+.task-counter { min-height: 34px; }
+.empty-message { line-height: 1.6; }
+.task-card:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.10); }
+
+@media (max-width: 1050px) {
+    .task-filters {
+        grid-template-areas:
+            "search search"
+            "priority status"
+            "clear clear"
+            "help help";
+    }
+}
+@media (max-width: 520px) {
+    .task-filters {
+        grid-template-areas:
+            "search"
+            "priority"
+            "status"
+            "clear"
+            "help";
+    }
+}
+
+
+/* Conta autenticada e ações da barra superior */
+.topbar-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.account-name { max-width: 180px; overflow: hidden; text-overflow: ellipsis; color: var(--muted); font-size: 13px; font-weight: 700; }
+#logout-form { margin: 0; }
+.btn-logout { min-height: 42px; padding: 10px 13px; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: #475569; font-weight: 700; transition: background .2s, border-color .2s; }
+.btn-logout:hover { border-color: #cbd5e1; background: #f1f5f9; }
+@media (max-width: 650px) {
+    .topbar { flex-wrap: wrap; }
+    .topbar-actions { flex-wrap: wrap; gap: 8px; }
+    .account-name { max-width: 100px; font-size: 12px; }
+    .topbar-actions .btn-primary { padding: 10px 12px; }
+    .btn-logout { min-height: 38px; padding: 8px 10px; }
+}
+
+
+/* Ajustes de layout da conta e notificacoes */
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+#logout-form {
+    display: flex;
+    align-items: center;
+}
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 15px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.btn-logout:hover {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: var(--primary);
+}
+.notification {
+    right: max(20px, env(safe-area-inset-right));
+    bottom: max(20px, env(safe-area-inset-bottom));
+    z-index: 2000;
+    width: max-content;
+    max-width: min(420px, calc(100vw - 40px));
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+    line-height: 1.5;
+    padding: 15px 18px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.28);
+}
+.notification.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+@media (max-width: 760px) {
+    .topbar {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    .topbar-actions {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+    .account-name {
+        max-width: 140px;
+    }
+}
+@media (max-width: 420px) {
+    .topbar-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+    }
+    .account-name {
+        grid-column: 1 / -1;
+        max-width: 100%;
+    }
+    .topbar-actions #open-task-modal {
+        justify-self: start;
+    }
+    .btn-logout {
+        min-height: 40px;
+        padding: 9px 12px;
+    }
+    .notification {
+        right: 12px;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        max-width: calc(100vw - 24px);
     }
 }
