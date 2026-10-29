@@ -1,5 +1,6 @@
 package com.cleiton.kanban.services;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -33,7 +34,8 @@ public class RegistrationService {
                     "O usuário deve ter de 3 a 50 caracteres: letras, números, ponto, hífen ou sublinhado.");
         }
 
-        if (!StringUtils.hasText(rawPassword) || rawPassword.length() < 12 || rawPassword.length() > 72) {
+        if (!StringUtils.hasText(rawPassword) || rawPassword.length() < 12
+                || rawPassword.getBytes(StandardCharsets.UTF_8).length > 72) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "A senha deve ter entre 12 e 72 caracteres.");
         }
