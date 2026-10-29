@@ -256,3 +256,49 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
         transition-duration: 0.01ms !important;
     }
 }
+
+/* Refinamentos de usabilidade e acessibilidade dos filtros */
+.task-filters {
+    grid-template-areas:
+        "search priority status clear"
+        "help help help help";
+}
+.search-field { grid-area: search; }
+.task-filters > .filter-field:nth-of-type(2) { grid-area: priority; }
+.task-filters > .filter-field:nth-of-type(3) { grid-area: status; }
+.task-filters > #clear-filters { grid-area: clear; }
+.filter-help {
+    grid-area: help;
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+.task-filters .btn-secondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+}
+.task-filters input:hover, .task-filters select:hover { border-color: #b8c2d5; }
+.task-counter { min-height: 34px; }
+.empty-message { line-height: 1.6; }
+.task-card:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.10); }
+
+@media (max-width: 1050px) {
+    .task-filters {
+        grid-template-areas:
+            "search search"
+            "priority status"
+            "clear clear"
+            "help help";
+    }
+}
+@media (max-width: 520px) {
+    .task-filters {
+        grid-template-areas:
+            "search"
+            "priority"
+            "status"
+            "clear"
+            "help";
+    }
+}
