@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Organize suas tarefas, acompanhe prioridades e visualize seu progresso em um quadro Kanban.">
 
-    <title>Meu Kanban</title>
+    <title>Meu Kanban | Organize suas tarefas</title>
 
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
@@ -21,7 +22,7 @@
             </div>
         </div>
 
-        <button id="open-task-modal" class="btn-primary">
+        <button id="open-task-modal" class="btn-primary" aria-haspopup="dialog">
             + Nova tarefa
         </button>
     </header>
@@ -34,7 +35,7 @@
                 <p>Planeje, execute e conclua suas atividades.</p>
             </div>
 
-            <span id="task-counter" class="task-counter">
+            <span id="task-counter" class="task-counter" aria-live="polite" aria-atomic="true">
                 0 tarefas
             </span>
         </section>
@@ -42,7 +43,7 @@
         <section class="task-filters" aria-label="Pesquisar e filtrar tarefas">
             <div class="search-field">
                 <label for="task-search">Pesquisar tarefas</label>
-                <input type="search" id="task-search" placeholder="Buscar por título ou descrição..." autocomplete="off">
+                <input type="search" id="task-search" placeholder="Buscar por título ou descrição..." autocomplete="off" aria-describedby="filter-help">
             </div>
             <div class="filter-field">
                 <label for="priority-filter">Prioridade</label>
@@ -62,7 +63,8 @@
                     <option value="DONE">Concluído</option>
                 </select>
             </div>
-            <button type="button" id="clear-filters" class="btn-secondary">Limpar filtros</button>
+            <button type="button" id="clear-filters" class="btn-secondary" disabled>Limpar filtros</button>
+            <p id="filter-help" class="filter-help">Os filtros combinam entre si. A pesquisa considera título e descrição.</p>
         </section>
 
         <section class="kanban-board">
