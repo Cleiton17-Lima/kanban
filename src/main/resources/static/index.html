@@ -39,6 +39,32 @@
             </span>
         </section>
 
+        <section class="task-filters" aria-label="Pesquisar e filtrar tarefas">
+            <div class="search-field">
+                <label for="task-search">Pesquisar tarefas</label>
+                <input type="search" id="task-search" placeholder="Buscar por título ou descrição..." autocomplete="off">
+            </div>
+            <div class="filter-field">
+                <label for="priority-filter">Prioridade</label>
+                <select id="priority-filter">
+                    <option value="ALL">Todas as prioridades</option>
+                    <option value="ALTA">Alta</option>
+                    <option value="MEDIA">Média</option>
+                    <option value="BAIXA">Baixa</option>
+                </select>
+            </div>
+            <div class="filter-field">
+                <label for="status-filter">Status</label>
+                <select id="status-filter">
+                    <option value="ALL">Todos os status</option>
+                    <option value="TODO">A Fazer</option>
+                    <option value="IN_PROGRESS">Em Andamento</option>
+                    <option value="DONE">Concluído</option>
+                </select>
+            </div>
+            <button type="button" id="clear-filters" class="btn-secondary">Limpar filtros</button>
+        </section>
+
         <section class="kanban-board">
 
             <div class="kanban-column" data-status="TODO">
