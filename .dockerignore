@@ -1,0 +1,6 @@
+.git
+target
+.sts4-cache
+.idea
+.env
+.env.*
