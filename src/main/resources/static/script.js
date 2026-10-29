@@ -56,7 +56,7 @@ async function request(url, options = {}) {
 
     const response = await fetch(url, requestOptions);
 
-    if (response.redirected && response.url.includes("/login.html")) {
+    if (url !== "/logout" && response.redirected && response.url.includes("/login.html")) {
         window.location.assign("/login.html");
         throw new Error("Sua sessão expirou. Entre novamente.");
     }
