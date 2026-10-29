@@ -401,8 +401,7 @@ taskForm.addEventListener("submit", async event => {
         closeTaskModal();
         resetTaskForm();
 
-        await loadAccount();
-loadTasks();
+        await loadTasks();
 
         showNotification(
             isEditing
@@ -519,4 +518,5 @@ document.getElementById("clear-filters").addEventListener("click", () => {
     applyFilters();
 });
 
+loadAccount();
 loadTasks();
