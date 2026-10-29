@@ -31,7 +31,7 @@ public class SecurityConfiguration {
                 .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/login.html", "/register.html", "/style.css", "/script.js",
+                    "/login.html", "/register.html", "/auth.css", "/login.js", "/register.js", "/style.css", "/script.js",
                     "/api/auth/csrf", "/api/auth/register", "/error", "/favicon.ico"
                 ).permitAll()
                 .anyRequest().authenticated())
