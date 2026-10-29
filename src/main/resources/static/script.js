@@ -192,6 +192,14 @@ function createTaskCard(task) {
     return card;
 }
 
+function hasActiveFilters() {
+    return Boolean(
+        document.getElementById("task-search").value.trim()
+        || document.getElementById("priority-filter").value !== "ALL"
+        || document.getElementById("status-filter").value !== "ALL"
+    );
+}
+
 function getFilteredTasks(tasks) {
     const searchTerm = document.getElementById("task-search").value.trim().toLocaleLowerCase("pt-BR");
     const selectedPriority = document.getElementById("priority-filter").value;
@@ -208,7 +216,9 @@ function getFilteredTasks(tasks) {
 }
 
 function renderTasks(tasks) {
-    tasks = getFilteredTasks(tasks);
+    const allTasks = tasks;
+    tasks = getFilteredTasks(allTasks);
+    document.getElementById("clear-filters").disabled = !hasActiveFilters();
     Object.values(statusConfig).forEach(config => {
         document.getElementById(config.listId).replaceChildren();
     });
@@ -237,15 +247,19 @@ function renderTasks(tasks) {
         if (list.children.length === 0) {
             const emptyMessage = document.createElement("p");
             emptyMessage.className = "empty-message";
-            emptyMessage.textContent = "Nenhuma tarefa por aqui.";
+            emptyMessage.textContent = hasActiveFilters()
+                ? "Nenhuma tarefa corresponde aos filtros."
+                : "Nenhuma tarefa por aqui.";
             list.appendChild(emptyMessage);
         }
 
         document.getElementById(config.countId).textContent = counts[status];
     });
 
-    document.getElementById("task-counter").textContent =
-        `${total} ${total === 1 ? "tarefa" : "tarefas"}`;
+    const totalTasks = currentTasks.length;
+    document.getElementById("task-counter").textContent = hasActiveFilters()
+        ? `${total} de ${totalTasks} tarefas`
+        : `${totalTasks} ${totalTasks === 1 ? "tarefa" : "tarefas"}`;
 }
 
 async function loadTasks() {
