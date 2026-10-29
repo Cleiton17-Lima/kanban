@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,13 @@ public class RegistrationService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Não foi possível criar a conta com esses dados.");
         }
 
-        userRepository.save(new KanbanUser(username.toLowerCase(Locale.ROOT),
-                passwordEncoder.encode(rawPassword)));
+        try {
+            userRepository.save(new KanbanUser(username.toLowerCase(Locale.ROOT),
+                    passwordEncoder.encode(rawPassword)));
+        } catch (DataIntegrityViolationException exception) {
+            // Também cobre tentativas concorrentes de cadastrar o mesmo usuário.
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Não foi possível criar a conta com esses dados.");
+        }
     }
 }
