@@ -28,24 +28,48 @@ let editingTaskId = null;
 let draggedTaskId = null;
 let notificationTimeout;
 
+function readCookie(name) {
+    const prefix = name + "=";
+    const item = document.cookie.split("; ").find(value => value.startsWith(prefix));
+    return item ? decodeURIComponent(item.substring(prefix.length)) : null;
+}
+
+async function prepareCsrf() {
+    const response = await fetch("/api/auth/csrf", { credentials: "same-origin" });
+    if (!response.ok) throw new Error("Não foi possível preparar a proteção da sessão.");
+    return response.json();
+}
+
 async function request(url, options = {}) {
-    const response = await fetch(url, options);
+    const method = (options.method || "GET").toUpperCase();
+    const requestOptions = { ...options, credentials: "same-origin" };
+
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
+        await prepareCsrf();
+        const token = readCookie("XSRF-TOKEN");
+        if (!token) throw new Error("A proteção da sessão expirou. Atualize a página.");
+        requestOptions.headers = {
+            ...(options.headers || {}),
+            "X-XSRF-TOKEN": token
+        };
+    }
+
+    const response = await fetch(url, requestOptions);
+
+    if (response.redirected && response.url.includes("/login.html")) {
+        window.location.assign("/login.html");
+        throw new Error("Sua sessão expirou. Entre novamente.");
+    }
 
     if (!response.ok) {
         const message = await response.text();
         throw new Error(message || `Erro HTTP ${response.status}`);
     }
 
-    if (response.status === 204) {
-        return null;
-    }
+    if (response.status === 204) return null;
 
     const contentType = response.headers.get("content-type") || "";
-
-    if (contentType.includes("application/json")) {
-        return response.json();
-    }
-
+    if (contentType.includes("application/json")) return response.json();
     return null;
 }
 
@@ -221,7 +245,11 @@ function getFilteredTasks(tasks) {
 
 function renderTasks(tasks) {
     const allTasks = tasks;
-    tasks = getFilteredTasks(allTasks);
+    const priorityOrder = { ALTA: 0, MEDIA: 1, BAIXA: 2 };
+    tasks = getFilteredTasks(allTasks).sort((a, b) =>
+        priorityOrder[normalizePriority(a.priority)] - priorityOrder[normalizePriority(b.priority)]
+        || String(a.title || "").localeCompare(String(b.title || ""), "pt-BR")
+    );
     document.getElementById("clear-filters").disabled = !hasActiveFilters();
     Object.values(statusConfig).forEach(config => {
         document.getElementById(config.listId).replaceChildren();
@@ -269,12 +297,37 @@ function renderTasks(tasks) {
 async function loadTasks() {
     try {
         currentTasks = await request(API_URL);
+        if (!Array.isArray(currentTasks)) currentTasks = [];
         renderTasks(currentTasks);
     } catch (error) {
         console.error("Erro ao carregar tarefas:", error);
-        showNotification("Não foi possível carregar as tarefas.");
+        showNotification(error.message || "Não foi possível carregar as tarefas.");
     }
 }
+
+async function loadAccount() {
+    try {
+        const [account, csrf] = await Promise.all([
+            request("/api/auth/me"),
+            prepareCsrf()
+        ]);
+        document.getElementById("account-name").textContent = account.username;
+        document.getElementById("logout-csrf").value = csrf.token;
+    } catch (error) {
+        console.error("Erro ao carregar conta:", error);
+        window.location.assign("/login.html");
+    }
+}
+
+document.getElementById("logout-form").addEventListener("submit", async event => {
+    event.preventDefault();
+    try {
+        await request("/logout", { method: "POST" });
+        window.location.assign("/login.html?logout");
+    } catch (error) {
+        showNotification("Não foi possível encerrar a sessão. Tente novamente.");
+    }
+});
 
 function resetTaskForm() {
     taskForm.reset();
@@ -348,7 +401,8 @@ taskForm.addEventListener("submit", async event => {
         closeTaskModal();
         resetTaskForm();
 
-        await loadTasks();
+        await loadAccount();
+loadTasks();
 
         showNotification(
             isEditing
