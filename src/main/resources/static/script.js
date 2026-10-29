@@ -66,7 +66,7 @@ async function request(url, options = {}) {
         const error = new Error(`Erro HTTP ${response.status}`);
         error.status = response.status;
         // Nao exibir paginas HTML ou detalhes internos do servidor na notificacao.
-        const plainText = responseText.replace(/<[^>]*>/g, " ").replace(/\\s+/g, " ").trim();
+        const plainText = responseText.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
         if (response.status === 403) {
             error.userMessage = "A protecao da sessao recusou a operacao. Atualize a pagina e tente novamente.";
         } else if (response.status >= 500) {
