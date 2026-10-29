@@ -89,6 +89,37 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
     white-space: nowrap;
 }
 
+
+/* Pesquisa e filtros */
+.task-filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) minmax(160px, 1fr) minmax(160px, 1fr) auto;
+    align-items: end;
+    gap: 14px;
+    margin: -8px 0 26px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: var(--shadow);
+}
+.search-field, .filter-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.task-filters label { color: var(--text); font-size: 12px; font-weight: 700; }
+.task-filters input, .task-filters select {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    border: 1px solid #dce3ed;
+    border-radius: 9px;
+    background: #fff;
+    color: var(--text);
+}
+.task-filters input:focus, .task-filters select:focus {
+    border-color: var(--primary);
+    outline: 3px solid rgba(79, 70, 229, 0.12);
+}
+.task-filters .btn-secondary { min-height: 42px; padding: 9px 13px; white-space: nowrap; }
+
 .kanban-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 20px; }
 .kanban-column {
     min-width: 0;
@@ -190,12 +221,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 }
 .notification.show { opacity: 1; transform: translateY(0); }
 
+@media (max-width: 1050px) {
+    .task-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 900px) {
     .kanban-board { grid-template-columns: 1fr; gap: 16px; }
     .kanban-column { min-height: 180px; padding: 15px; }
     .task-list { min-height: 90px; }
 }
 @media (max-width: 520px) {
+    .task-filters { grid-template-columns: 1fr; gap: 12px; padding: 14px; margin-bottom: 20px; }
+    .task-filters .btn-secondary { width: 100%; }
+
     .topbar { align-items: flex-start; gap: 12px; padding: 18px 4%; }
     .brand { gap: 10px; }
     .brand-icon { width: 40px; height: 40px; }
