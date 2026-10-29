@@ -23,6 +23,7 @@ const statusConfig = {
     }
 };
 
+let currentTasks = [];
 let editingTaskId = null;
 let draggedTaskId = null;
 let notificationTimeout;
@@ -191,7 +192,23 @@ function createTaskCard(task) {
     return card;
 }
 
+function getFilteredTasks(tasks) {
+    const searchTerm = document.getElementById("task-search").value.trim().toLocaleLowerCase("pt-BR");
+    const selectedPriority = document.getElementById("priority-filter").value;
+    const selectedStatus = document.getElementById("status-filter").value;
+
+    return tasks.filter(task => {
+        const title = String(task.title || "").toLocaleLowerCase("pt-BR");
+        const description = String(task.description || "").toLocaleLowerCase("pt-BR");
+        const matchesSearch = !searchTerm || title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesPriority = selectedPriority === "ALL" || normalizePriority(task.priority) === selectedPriority;
+        const matchesStatus = selectedStatus === "ALL" || normalizeStatus(task.status) === selectedStatus;
+        return matchesSearch && matchesPriority && matchesStatus;
+    });
+}
+
 function renderTasks(tasks) {
+    tasks = getFilteredTasks(tasks);
     Object.values(statusConfig).forEach(config => {
         document.getElementById(config.listId).replaceChildren();
     });
@@ -233,8 +250,8 @@ function renderTasks(tasks) {
 
 async function loadTasks() {
     try {
-        const tasks = await request(API_URL);
-        renderTasks(tasks);
+        currentTasks = await request(API_URL);
+        renderTasks(currentTasks);
     } catch (error) {
         console.error("Erro ao carregar tarefas:", error);
         showNotification("Não foi possível carregar as tarefas.");
@@ -413,6 +430,21 @@ document.querySelectorAll(".kanban-column").forEach(column => {
             await loadTasks();
         }
     });
+});
+
+function applyFilters() {
+    renderTasks(currentTasks);
+}
+
+document.getElementById("task-search").addEventListener("input", applyFilters);
+document.getElementById("priority-filter").addEventListener("change", applyFilters);
+document.getElementById("status-filter").addEventListener("change", applyFilters);
+
+document.getElementById("clear-filters").addEventListener("click", () => {
+    document.getElementById("task-search").value = "";
+    document.getElementById("priority-filter").value = "ALL";
+    document.getElementById("status-filter").value = "ALL";
+    applyFilters();
 });
 
 loadTasks();
