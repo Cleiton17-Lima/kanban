@@ -63,6 +63,9 @@ public class SecurityConfiguration {
             .headers(headers -> headers
                 .contentTypeOptions(Customizer.withDefaults())
                 .frameOptions(frame -> frame.deny())
+                .httpStrictTransportSecurity(hsts -> hsts
+                    .includeSubDomains(true)
+                    .maxAgeInSeconds(31536000))
                 .contentSecurityPolicy(csp -> csp.policyDirectives(
                     "default-src 'self'; base-uri 'self'; form-action 'self'; " +
                     "frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; " +
