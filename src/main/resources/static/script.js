@@ -104,6 +104,29 @@ function createTaskCard(task) {
     description.className = "task-description";
     description.textContent = task.description || "Sem descrição";
 
+    const dates = document.createElement("div");
+    dates.className = "task-dates";
+
+    const formatDate = value => {
+        if (!value) return null;
+        const parts = String(value).split("-").map(Number);
+        if (parts.length !== 3 || parts.some(Number.isNaN)) return value;
+        return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString("pt-BR");
+    };
+
+    const startDate = formatDate(task.startDate);
+    const completionDate = formatDate(task.completionDate);
+    if (startDate) {
+        const start = document.createElement("span");
+        start.textContent = `Início: ${startDate}`;
+        dates.appendChild(start);
+    }
+    if (completionDate) {
+        const completed = document.createElement("span");
+        completed.textContent = `Concluída: ${completionDate}`;
+        dates.appendChild(completed);
+    }
+
     const footer = document.createElement("div");
     footer.className = "task-footer";
 
@@ -144,7 +167,9 @@ function createTaskCard(task) {
 
     actions.append(editButton, deleteButton);
 
-    card.append(title, description, footer, actions);
+    card.append(title, description);
+    if (dates.childElementCount > 0) card.appendChild(dates);
+    card.append(footer, actions);
 
     card.addEventListener("dragstart", event => {
         draggedTaskId = task.id;
