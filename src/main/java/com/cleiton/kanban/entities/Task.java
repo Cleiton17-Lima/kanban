@@ -2,10 +2,15 @@ package com.cleiton.kanban.entities;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,11 +28,15 @@ public class Task {
     private LocalDate startDate;
     private LocalDate completionDate;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private KanbanUser owner;
+
     public Task() {
     }
 
-    public Task(Long id, String title, String description,
-                String status, String priority) {
+    public Task(Long id, String title, String description, String status, String priority) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -89,5 +98,13 @@ public class Task {
 
     public void setCompletionDate(LocalDate completionDate) {
         this.completionDate = completionDate;
+    }
+
+    public KanbanUser getOwner() {
+        return owner;
+    }
+
+    public void setOwner(KanbanUser owner) {
+        this.owner = owner;
     }
 }
